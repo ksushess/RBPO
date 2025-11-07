@@ -1,17 +1,33 @@
 package com.example.photoprintapplication.models;
 
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
+@Entity
+@Table(name = "orders")
 public class Order {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Enumerated(EnumType.STRING)
     private OrderStatus status = OrderStatus.CREATED;
+
     private BigDecimal totalPrice = BigDecimal.ZERO;
     private Long customerId;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Photo> photos = new ArrayList<>();
+
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private Delivery delivery;
 
     public enum OrderStatus {
@@ -19,9 +35,9 @@ public class Order {
     }
 
     public void calculateTotalPrice() {
-        this.totalPrice = photos.stream()
-                .map(photo -> photo.getFormat().getPrice())
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        if (this.totalPrice == null) {
+            this.totalPrice = BigDecimal.ZERO;
+        }
     }
     // Геттеры и сеттеры
     public Long getId() { return id; }

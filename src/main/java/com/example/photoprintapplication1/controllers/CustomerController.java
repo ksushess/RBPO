@@ -1,9 +1,10 @@
 package com.example.photoprintapplication.controllers;
 
 import com.example.photoprintapplication.models.Customer;
-import com.example.photoprintapplication.repository.PhotoPrintRepository;
+import com.example.photoprintapplication.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -11,26 +12,26 @@ import java.util.List;
 @RequestMapping("/api/customers")
 public class CustomerController {
     @Autowired
-    private PhotoPrintRepository repo;
+    private CustomerRepository customerRepository;
 
     @PostMapping
     public Customer create(@RequestBody Customer customer) {
-        return repo.save(customer);
+        return customerRepository.save(customer);
     }
 
     @GetMapping
     public List<Customer> all() {
-        return repo.findAllCustomers();
+        return customerRepository.findAll();
     }
 
     @GetMapping("/{id}")
     public Customer get(@PathVariable Long id) {
-        return repo.findCustomerById(id).orElse(null);
+        return customerRepository.findById(id).orElse(null);
     }
 
     @PutMapping("/{id}")
     public Customer update(@PathVariable Long id, @RequestBody Customer customer) {
-        Customer exist = repo.findCustomerById(id).orElse(null);
+        Customer exist = customerRepository.findById(id).orElse(null);
         if (exist == null) return null;
 
         exist.setFirstName(customer.getFirstName());
@@ -38,12 +39,12 @@ public class CustomerController {
         exist.setPhone(customer.getPhone());
         exist.setEmail(customer.getEmail());
 
-        return repo.save(exist);
+        return customerRepository.save(exist);
     }
 
     @DeleteMapping("/{id}")
     public String delete(@PathVariable Long id) {
-        repo.deleteCustomerById(id);
+        customerRepository.deleteById(id);
         return "ok";
     }
 }

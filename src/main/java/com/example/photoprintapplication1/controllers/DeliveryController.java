@@ -1,10 +1,10 @@
 package com.example.photoprintapplication.controllers;
 
 import com.example.photoprintapplication.models.Delivery;
-import com.example.photoprintapplication.models.Order;
-import com.example.photoprintapplication.repository.PhotoPrintRepository;
+import com.example.photoprintapplication.repository.DeliveryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -12,58 +12,47 @@ import java.util.List;
 @RequestMapping("/api/deliveries")
 public class DeliveryController {
     @Autowired
-    private PhotoPrintRepository repo;
+    private DeliveryRepository deliveryRepository;
 
     @PostMapping
-    public Object create(@RequestBody Delivery delivery) {
-        // Проверяем что заказ существует
-        if (delivery.getOrderId() == null) {
-            return "orderId is required";
+    public Delivery create(@RequestBody Delivery delivery) {
+        // Если передан заказ с ID, устанавливаем связь
+        if (delivery.getOrder() != null && delivery.getOrder().getId() != null) {
+            // Связь уже установлена через объект Order
         }
-
-        Order order = repo.findOrderById(delivery.getOrderId()).orElse(null);
-        if (order == null) {
-            return "Order not found";
-        }
-
-        // Проверяем что заказ оплачен
-        if (order.getStatus() != Order.OrderStatus.PAID) {
-            return "Delivery can only be created for paid orders";
-        }
-
-        // Проверяем что для заказа еще нет доставки
-        if (repo.existsDeliveryForOrder(delivery.getOrderId())) {
-            return "Delivery already exists for this order";
-        }
-
-        return repo.save(delivery);
+        return deliveryRepository.save(delivery);
     }
 
     @GetMapping
     public List<Delivery> all() {
-        return repo.findAllDeliveries();
+        return deliveryRepository.findAll();
     }
 
     @GetMapping("/{id}")
     public Delivery get(@PathVariable Long id) {
-        return repo.findDeliveryById(id).orElse(null);
+        return deliveryRepository.findById(id).orElse(null);
     }
 
     @PutMapping("/{id}")
     public Delivery update(@PathVariable Long id, @RequestBody Delivery delivery) {
-        Delivery exist = repo.findDeliveryById(id).orElse(null);
+        Delivery exist = deliveryRepository.findById(id).orElse(null);
         if (exist == null) return null;
 
         exist.setAddress(delivery.getAddress());
         exist.setTrackingNumber(delivery.getTrackingNumber());
         exist.setStatus(delivery.getStatus());
 
-        return repo.save(exist);
+        // Обновляем заказ если передан
+        if (delivery.getOrder() != null && delivery.getOrder().getId() != null) {
+            exist.setOrder(delivery.getOrder());
+        }
+
+        return deliveryRepository.save(exist);
     }
 
     @DeleteMapping("/{id}")
     public String delete(@PathVariable Long id) {
-        repo.deleteDeliveryById(id);
+        deliveryRepository.deleteById(id);
         return "ok";
     }
 }

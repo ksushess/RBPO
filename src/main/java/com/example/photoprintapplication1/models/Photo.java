@@ -1,11 +1,27 @@
 package com.example.photoprintapplication.models;
 
+import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+@Entity
+@Table(name = "photos")
 public class Photo {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String filename;
     private String description;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    @JsonIgnore
+    private Order order;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "format_id")
+    @JsonIgnore
     private Format format;
-    private Long orderId;
 
     public Photo() {}
     public Photo(String filename, String description, Format format) {
@@ -26,6 +42,6 @@ public class Photo {
     public Format getFormat() { return format; }
     public void setFormat(Format format) { this.format = format; }
 
-    public Long getOrderId() { return orderId; }
-    public void setOrderId(Long orderId) { this.orderId = orderId; }
+    public Order getOrder() { return order; }
+    public void setOrder(Order order) { this.order = order; }
 }

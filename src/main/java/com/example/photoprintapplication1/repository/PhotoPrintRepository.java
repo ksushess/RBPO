@@ -1,4 +1,4 @@
-package com.example.photoprintapplication.repository;
+/*package com.example.photoprintapplication.repository;
 
 import com.example.photoprintapplication.models.*;
 import org.springframework.stereotype.Repository;
@@ -137,4 +137,4 @@ public class PhotoPrintRepository {
                 .filter(delivery -> delivery.getOrderId().equals(orderId))
                 .findFirst();
     }
-}
+}*/

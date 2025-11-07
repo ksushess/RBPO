@@ -4,10 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class PhotoPrintApplication {
-
+public class PhotoprintApplication {
 	public static void main(String[] args) {
-		SpringApplication.run(PhotoPrintApplication.class, args);
+		SpringApplication.run(PhotoprintApplication.class, args);
 	}
-
 }

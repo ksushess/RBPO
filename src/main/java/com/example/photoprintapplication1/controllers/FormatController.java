@@ -1,7 +1,7 @@
 package com.example.photoprintapplication.controllers;
 
 import com.example.photoprintapplication.models.Format;
-import com.example.photoprintapplication.repository.PhotoPrintRepository;
+import com.example.photoprintapplication.repository.FormatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,38 +11,38 @@ import java.util.List;
 @RequestMapping("/api/formats")
 public class FormatController {
     @Autowired
-    private PhotoPrintRepository repo;
+    private FormatRepository formatRepository;
 
     @PostMapping
     public Format create(@RequestBody Format format) {
-        return repo.save(format);
+        return formatRepository.save(format);
     }
 
     @GetMapping
     public List<Format> all() {
-        return repo.findAllFormats();
+        return formatRepository.findAll();
     }
 
     @GetMapping("/{id}")
     public Format get(@PathVariable Long id) {
-        return repo.findFormatById(id).orElse(null);
+        return formatRepository.findById(id).orElse(null);
     }
 
     @PutMapping("/{id}")
     public Format update(@PathVariable Long id, @RequestBody Format format) {
-        Format exist = repo.findFormatById(id).orElse(null);
+        Format exist = formatRepository.findById(id).orElse(null);
         if (exist == null) return null;
 
         exist.setName(format.getName());
         exist.setDescription(format.getDescription());
         exist.setPrice(format.getPrice());
 
-        return repo.save(exist);
+        return formatRepository.save(exist);
     }
 
     @DeleteMapping("/{id}")
     public String delete(@PathVariable Long id) {
-        repo.deleteFormatById(id);
+        formatRepository.deleteById(id);
         return "ok";
     }
 }
