@@ -10,7 +10,13 @@ import java.util.List;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
+
+
+    List<Order> findByUserId(Long userId);
+
+
     List<Order> findByCustomerId(Long customerId);
+
     Long countByStatus(Order.OrderStatus status);
 
     @Query("SELECT COUNT(o) FROM Order o")

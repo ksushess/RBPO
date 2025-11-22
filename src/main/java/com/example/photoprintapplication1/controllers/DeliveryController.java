@@ -3,23 +3,21 @@ package com.example.photoprintapplication.controllers;
 import com.example.photoprintapplication.models.Delivery;
 import com.example.photoprintapplication.repository.DeliveryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/deliveries")
+@PreAuthorize("hasRole('ADMIN')")
 public class DeliveryController {
+
     @Autowired
     private DeliveryRepository deliveryRepository;
 
     @PostMapping
     public Delivery create(@RequestBody Delivery delivery) {
-        // Если передан заказ с ID, устанавливаем связь
-        if (delivery.getOrder() != null && delivery.getOrder().getId() != null) {
-            // Связь уже установлена через объект Order
-        }
         return deliveryRepository.save(delivery);
     }
 
@@ -41,11 +39,6 @@ public class DeliveryController {
         exist.setAddress(delivery.getAddress());
         exist.setTrackingNumber(delivery.getTrackingNumber());
         exist.setStatus(delivery.getStatus());
-
-        // Обновляем заказ если передан
-        if (delivery.getOrder() != null && delivery.getOrder().getId() != null) {
-            exist.setOrder(delivery.getOrder());
-        }
 
         return deliveryRepository.save(exist);
     }

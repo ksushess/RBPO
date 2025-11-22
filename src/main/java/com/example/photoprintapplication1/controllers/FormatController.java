@@ -3,6 +3,7 @@ package com.example.photoprintapplication.controllers;
 import com.example.photoprintapplication.models.Format;
 import com.example.photoprintapplication.repository.FormatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,10 +11,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/formats")
 public class FormatController {
+
     @Autowired
     private FormatRepository formatRepository;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public Format create(@RequestBody Format format) {
         return formatRepository.save(format);
     }
@@ -29,6 +32,7 @@ public class FormatController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public Format update(@PathVariable Long id, @RequestBody Format format) {
         Format exist = formatRepository.findById(id).orElse(null);
         if (exist == null) return null;
@@ -41,6 +45,7 @@ public class FormatController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String delete(@PathVariable Long id) {
         formatRepository.deleteById(id);
         return "ok";

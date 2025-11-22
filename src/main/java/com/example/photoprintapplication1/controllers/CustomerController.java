@@ -3,16 +3,22 @@ package com.example.photoprintapplication.controllers;
 import com.example.photoprintapplication.models.Customer;
 import com.example.photoprintapplication.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/customers")
+@PreAuthorize("hasRole('ADMIN')")
 public class CustomerController {
+
+    private final CustomerRepository customerRepository;
+
     @Autowired
-    private CustomerRepository customerRepository;
+    public CustomerController(CustomerRepository customerRepository){
+        this.customerRepository = customerRepository;
+    }
 
     @PostMapping
     public Customer create(@RequestBody Customer customer) {

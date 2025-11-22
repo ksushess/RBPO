@@ -20,25 +20,41 @@ public class Order {
     private OrderStatus status = OrderStatus.CREATED;
 
     private BigDecimal totalPrice = BigDecimal.ZERO;
-    private Long customerId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id")
+    @JsonIgnore
+    private Customer customer;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
     private List<Photo> photos = new ArrayList<>();
 
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
     private Delivery delivery;
 
     public enum OrderStatus {
         CREATED, PAID, IN_PROGRESS, COMPLETED, CANCELLED
     }
 
+
     public void calculateTotalPrice() {
-        if (this.totalPrice == null) {
+        if (this.photos != null && !this.photos.isEmpty()) {
+            this.totalPrice = BigDecimal.ZERO;
+            for (Photo photo : this.photos) {
+                if (photo.getFormat() != null && photo.getFormat().getPrice() != null) {
+                    this.totalPrice = this.totalPrice.add(photo.getFormat().getPrice());
+                }
+            }
+        } else {
             this.totalPrice = BigDecimal.ZERO;
         }
     }
+
     // Геттеры и сеттеры
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -52,8 +68,11 @@ public class Order {
     public BigDecimal getTotalPrice() { return totalPrice; }
     public void setTotalPrice(BigDecimal totalPrice) { this.totalPrice = totalPrice; }
 
-    public Long getCustomerId() { return customerId; }
-    public void setCustomerId(Long customerId) { this.customerId = customerId; }
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+
+    public Customer getCustomer() { return customer; }
+    public void setCustomer(Customer customer) { this.customer = customer; }
 
     public List<Photo> getPhotos() { return photos; }
     public void setPhotos(List<Photo> photos) { this.photos = photos; }

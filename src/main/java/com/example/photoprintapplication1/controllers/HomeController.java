@@ -8,6 +8,6 @@ public class HomeController {
 
     @GetMapping("/")
     public String home() {
-        return "API фотопечати доступно по:  /api/customers, /api/orders, /api/formats, /api/photos, /api/deliveries";
+        return "API: /api/customers, /api/orders, /api/formats, /api/photos, /api/deliveries";
     }
 }
