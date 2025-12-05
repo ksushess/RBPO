@@ -53,7 +53,9 @@ public class AuthService {
 
         // Создание Customer для пользователя
         Customer customer = new Customer();
-        customer.setFirstName(request.getUsername());
+        customer.setFirstName(request.getFirstName());
+        customer.setLastName(request.getLastName());
+        customer.setPhone(request.getPhone());
         customer.setEmail(request.getEmail());
         customer.setUser(user);
 

@@ -123,7 +123,7 @@ public class OrderServiceController {
 
 
     @GetMapping("/statistics/popular-formats")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public Map<String, Object> getPopularFormats() {
         try {
             List<Object[]> formatStats = photoRepository.findPopularFormats();

@@ -5,6 +5,8 @@ import com.example.photoprintapplication.models.Photo;
 import com.example.photoprintapplication.models.User;
 import com.example.photoprintapplication.repository.OrderRepository;
 import com.example.photoprintapplication.repository.UserRepository;
+import com.example.photoprintapplication.models.Format;
+import com.example.photoprintapplication.repository.FormatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,6 +27,9 @@ public class OrderController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private FormatRepository formatRepository;
+
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('USER')")
@@ -43,6 +48,13 @@ public class OrderController {
         if (order.getPhotos() != null) {
             for (Photo photo : order.getPhotos()) {
                 photo.setOrder(order);
+                if (photo.getFormat() != null && photo.getFormat().getId() != null) {
+                    Format format = formatRepository.findById(photo.getFormat().getId())
+                            .orElseThrow(() -> new RuntimeException("Format not found"));
+                    photo.setFormat(format);
+                } else {
+                    throw new RuntimeException("Format is required for photo");
+                }
             }
         }
 

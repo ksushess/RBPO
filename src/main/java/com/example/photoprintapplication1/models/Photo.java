@@ -18,9 +18,9 @@ public class Photo {
     @JsonIgnore
     private Order order;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "format_id")
-    @JsonIgnore
+    //@JsonIgnore
     private Format format;
 
     public Photo() {}
