@@ -1,4 +1,4 @@
-package com.example.photoprintapplication;
+package com.example.photoprintapplication1;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

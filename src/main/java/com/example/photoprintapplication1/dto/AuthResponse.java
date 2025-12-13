@@ -1,4 +1,4 @@
-package com.example.photoprintapplication.dto;
+package com.example.photoprintapplication1.dto;
 
 public class AuthResponse {
     private String username;

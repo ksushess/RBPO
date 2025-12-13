@@ -1,8 +1,8 @@
-package com.example.photoprintapplication.controllers;
+package com.example.photoprintapplication1.controllers;
 
-import com.example.photoprintapplication.dto.AuthResponse;
-import com.example.photoprintapplication.dto.RegisterRequest;
-import com.example.photoprintapplication.service.AuthService;
+import com.example.photoprintapplication1.dto.AuthResponse;
+import com.example.photoprintapplication1.dto.RegisterRequest;
+import com.example.photoprintapplication1.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

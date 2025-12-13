@@ -1,7 +1,7 @@
-package com.example.photoprintapplication.controllers;
+package com.example.photoprintapplication1.controllers;
 
-import com.example.photoprintapplication.models.Customer;
-import com.example.photoprintapplication.repository.CustomerRepository;
+import com.example.photoprintapplication1.models.Customer;
+import com.example.photoprintapplication1.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

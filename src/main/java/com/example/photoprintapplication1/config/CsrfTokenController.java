@@ -1,8 +1,9 @@
-package com.example.photoprintapplication.controllers;
+package com.example.photoprintapplication1.config;
 
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.security.web.csrf.CsrfToken;
+
 import java.util.Map;
 
 @RestController

@@ -1,8 +1,8 @@
-package com.example.photoprintapplication.service;
+package com.example.photoprintapplication1.service;
 
-import com.example.photoprintapplication.models.User;
-import com.example.photoprintapplication.models.Role;
-import com.example.photoprintapplication.repository.UserRepository;
+import com.example.photoprintapplication1.models.User;
+import com.example.photoprintapplication1.models.Role;
+import com.example.photoprintapplication1.repository.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

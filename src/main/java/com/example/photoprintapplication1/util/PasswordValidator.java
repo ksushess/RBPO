@@ -1,4 +1,4 @@
-package com.example.photoprintapplication.util;
+package com.example.photoprintapplication1.util;
 
 import org.springframework.stereotype.Component;
 import java.util.regex.Pattern;

@@ -1,6 +1,7 @@
-package com.example.photoprintapplication.config;
+// src/main/java/com/example/photoprintapplication1/config/SecurityConfig.java
+package com.example.photoprintapplication1.config;
 
-import com.example.photoprintapplication.service.CustomUserDetailsService;
+import com.example.photoprintapplication1.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,13 +34,16 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/", "/api/home/**", "/api/auth/**", "/api/csrf-token").permitAll()
-                        .requestMatchers("/api/orders/my-orders", "/api/orders/create").hasRole("USER")
-                        .requestMatchers("/api/formats/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/api/photos/my-photos/**").hasRole("USER")
-                        .requestMatchers("/api/business/orders/calculate", "/api/business/orders/calculate-price").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/api/business/statistics/popular-formats").hasAnyRole("ADMIN")
-                        .requestMatchers("/api/admin/**", "/api/customers/**", "/api/business/**", "/api/deliveries/**").hasRole("ADMIN")
+                        // Сначала конкретные пути для USER + ADMIN
+                        .requestMatchers("/api/orders/create").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/orders/my-orders", "/api/orders/my-orders/**").hasAnyRole("USER", "ADMIN")
+                        // Потом общий путь для админских CRUD
                         .requestMatchers("/api/orders/**").hasRole("ADMIN")
+                        .requestMatchers("/api/formats/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/photos/my-photos/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/business/orders/calculate", "/api/business/orders/calculate-price").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/business/statistics/popular-formats").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/**", "/api/customers/**", "/api/business/**", "/api/deliveries/**").hasRole("ADMIN")
                         .requestMatchers("/api/photos/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

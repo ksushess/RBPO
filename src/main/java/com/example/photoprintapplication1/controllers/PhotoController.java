@@ -1,19 +1,19 @@
-package com.example.photoprintapplication.controllers;
+package com.example.photoprintapplication1.controllers;
 
-import com.example.photoprintapplication.models.Photo;
-import com.example.photoprintapplication.models.Format;
-import com.example.photoprintapplication.models.User;
-import com.example.photoprintapplication.repository.PhotoRepository;
-import com.example.photoprintapplication.repository.FormatRepository;
-import com.example.photoprintapplication.repository.UserRepository;
+import com.example.photoprintapplication1.models.Photo;
+import com.example.photoprintapplication1.models.Format;
+import com.example.photoprintapplication1.models.Order;
+import com.example.photoprintapplication1.repository.PhotoRepository;
+import com.example.photoprintapplication1.repository.FormatRepository;
+import com.example.photoprintapplication1.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/photos")
@@ -26,92 +26,76 @@ public class PhotoController {
     private FormatRepository formatRepository;
 
     @Autowired
-    private UserRepository userRepository;
-
+    private OrderRepository orderRepository;
 
     @PostMapping
-    @PreAuthorize("hasRole('USER')")
-    public Photo create(@RequestBody Photo photo) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")  // Разрешить USER/ADMIN, если нужно
+    public Photo create(@RequestBody Map<String, Object> request) {
+        String filename = (String) request.get("filename");
+        String description = (String) request.get("description");
+        Long formatId = request.containsKey("formatId") ? Long.parseLong(request.get("formatId").toString()) : null;
+        Long orderId = request.containsKey("orderId") ? Long.parseLong(request.get("orderId").toString()) : null;
 
-        // Проверяем, принадлежит ли заказ пользователю
-        if (photo.getOrder() != null && photo.getOrder().getId() != null) {
-            Photo existingPhoto = photoRepository.findById(photo.getId()).orElse(null);
-            if (existingPhoto != null &&
-                    !existingPhoto.getOrder().getUser().getUsername().equals(username)) {
-                throw new AccessDeniedException("You can only add photos to your own orders");
-            }
+        if (formatId == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "formatId is required");
         }
 
-        if (photo.getFormat() != null && photo.getFormat().getId() != null) {
-            Format format = formatRepository.findById(photo.getFormat().getId())
-                    .orElse(null);
-            photo.setFormat(format);
+        Format format = formatRepository.findById(formatId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Format not found: " + formatId));
+
+        Photo photo = new Photo();
+        photo.setFilename(filename != null ? filename : "default.jpg");
+        photo.setDescription(description != null ? description : "");
+        photo.setFormat(format);
+
+        if (orderId != null) {
+            Order order = orderRepository.findById(orderId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found: " + orderId));
+            photo.setOrder(order);
         }
+
         return photoRepository.save(photo);
     }
 
-
-    @GetMapping("/my-photos")
-    @PreAuthorize("hasRole('USER')")
-    public List<Photo> getMyPhotos() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
-
-        User currentUser = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        return photoRepository.findByOrderUserId(currentUser.getId());
-    }
-
-
-    @GetMapping("/my-photos/{id}")
-    @PreAuthorize("hasRole('USER')")
-    public Photo getMyPhoto(@PathVariable Long id) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
-
-        Photo photo = photoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Photo not found"));
-
-        // Проверяем, принадлежит ли фото пользователю
-        if (photo.getOrder() == null ||
-                !photo.getOrder().getUser().getUsername().equals(username)) {
-            throw new AccessDeniedException("You can only view your own photos");
-        }
-
-        return photo;
-    }
-
-
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public List<Photo> getAllPhotos() {
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public List<Photo> all() {
         return photoRepository.findAll();
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public Photo getPhoto(@PathVariable Long id) {
-        return photoRepository.findById(id).orElse(null);
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public Photo get(@PathVariable Long id) {
+        return photoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Photo not found: " + id));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public Photo update(@PathVariable Long id, @RequestBody Photo photo) {
-        Photo exist = photoRepository.findById(id).orElse(null);
-        if (exist == null) return null;
+    public Photo update(@PathVariable Long id, @RequestBody Map<String, Object> request) {
+        Photo photo = photoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Photo not found: " + id));
 
-        exist.setFilename(photo.getFilename());
-        exist.setDescription(photo.getDescription());
-
-        if (photo.getFormat() != null && photo.getFormat().getId() != null) {
-            Format format = formatRepository.findById(photo.getFormat().getId()).orElse(null);
-            exist.setFormat(format);
+        if (request.containsKey("filename")) {
+            photo.setFilename((String) request.get("filename"));
+        }
+        if (request.containsKey("description")) {
+            photo.setDescription((String) request.get("description"));
+        }
+        if (request.containsKey("formatId")) {
+            Long formatId = Long.parseLong(request.get("formatId").toString());
+            Format format = formatRepository.findById(formatId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Format not found: " + formatId));
+            photo.setFormat(format);
+        }
+        if (request.containsKey("orderId")) {
+            Long orderId = Long.parseLong(request.get("orderId").toString());
+            Order order = orderRepository.findById(orderId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found: " + orderId));
+            photo.setOrder(order);
         }
 
-        return photoRepository.save(exist);
+        return photoRepository.save(photo);
     }
 
     @DeleteMapping("/{id}")

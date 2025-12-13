@@ -1,6 +1,6 @@
-package com.example.photoprintapplication.repository;
+package com.example.photoprintapplication1.repository;
 
-import com.example.photoprintapplication.models.Photo;
+import com.example.photoprintapplication1.models.Photo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

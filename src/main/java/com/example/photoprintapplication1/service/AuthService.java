@@ -1,12 +1,12 @@
-package com.example.photoprintapplication.service;
+package com.example.photoprintapplication1.service;
 
-import com.example.photoprintapplication.dto.RegisterRequest;
-import com.example.photoprintapplication.models.User;
-import com.example.photoprintapplication.models.Customer;
-import com.example.photoprintapplication.models.Role;
-import com.example.photoprintapplication.repository.UserRepository;
-import com.example.photoprintapplication.repository.CustomerRepository;
-import com.example.photoprintapplication.util.PasswordValidator;
+import com.example.photoprintapplication1.dto.RegisterRequest;
+import com.example.photoprintapplication1.models.User;
+import com.example.photoprintapplication1.models.Customer;
+import com.example.photoprintapplication1.models.Role;
+import com.example.photoprintapplication1.repository.UserRepository;
+import com.example.photoprintapplication1.repository.CustomerRepository;
+import com.example.photoprintapplication1.util.PasswordValidator;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

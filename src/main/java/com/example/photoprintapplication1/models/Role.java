@@ -1,4 +1,4 @@
-package com.example.photoprintapplication.models;
+package com.example.photoprintapplication1.models;
 
 public enum Role {
     USER,

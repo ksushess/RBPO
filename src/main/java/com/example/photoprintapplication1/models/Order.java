@@ -1,4 +1,4 @@
-package com.example.photoprintapplication.models;
+package com.example.photoprintapplication1.models;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
