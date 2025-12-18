@@ -1,4 +1,4 @@
-package com.example.PhotoPrintApplication;
+package com.example.photoprintapplication1;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
