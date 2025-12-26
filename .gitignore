@@ -35,3 +35,6 @@ build/
 **/certs/*.jks
 **/certs/*.csr
 **/certs/*.key
+
+run.bat
+*.bat
