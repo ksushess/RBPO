@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -72,20 +73,41 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public ResponseEntity<AuthResponse> refresh(@RequestBody Map<String, String> request) {
-        String refreshToken = request.get("refreshToken");
+        String oldRefreshToken = request.get("refreshToken");
 
-        if (refreshToken == null || !jwtTokenProvider.validateToken(refreshToken)) {
+        if (oldRefreshToken == null || !jwtTokenProvider.validateToken(oldRefreshToken)) {
             return ResponseEntity.status(403).body(new AuthResponse(null, null, "Invalid refresh token"));
         }
 
-        String username = jwtTokenProvider.getUsernameFromToken(refreshToken);
+        String username = jwtTokenProvider.getUsernameFromToken(oldRefreshToken);
 
+        // Находим сессию по старому refresh-токену
+        UserSession oldSession = userSessionRepository.findByRefreshToken(oldRefreshToken)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Session not found"));
+
+        // Проверяем, активна ли сессия
+        if (oldSession.getStatus() != SessionStatus.ACTIVE) {
+            return ResponseEntity.status(403).body(new AuthResponse(null, null, "Refresh token already used or revoked"));
+        }
+
+        // Ревокируем старый refresh-токен
+        oldSession.setStatus(SessionStatus.REVOKED);
+        userSessionRepository.save(oldSession);
+
+        // Создаём новую пару токенов
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
-
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
         String newAccessToken = jwtTokenProvider.createAccessToken(authentication);
         String newRefreshToken = jwtTokenProvider.createRefreshToken(authentication);
+
+        // Создаём новую сессию
+        UserSession newSession = new UserSession();
+        newSession.setUser(oldSession.getUser());
+        newSession.setRefreshToken(newRefreshToken);
+        newSession.setExpiresAt(LocalDateTime.now().plusDays(7));
+        newSession.setStatus(SessionStatus.ACTIVE);
+        userSessionRepository.save(newSession);
 
         return ResponseEntity.ok(new AuthResponse(newAccessToken, newRefreshToken, "Tokens refreshed"));
     }

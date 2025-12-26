@@ -35,10 +35,11 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setSubject(user.getUsername())
-                .claim("role", user.getAuthorities().iterator().next().getAuthority())
+                .claim("user_role", user.getAuthorities().iterator().next().getAuthority())
+                .claim("token_type", "ACCESS_TOKEN_FOR_API")
                 .setIssuedAt(now)
                 .setExpiration(expiry)
-                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -49,6 +50,11 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .setSubject(user.getUsername())
+                .claim("token_type", "REFRESH_TOKEN")
+                //.claim("usage", "get_new_access_token")
+                .setAudience("auth")
+                .setIssuer("token-manager")
+                .claim("purpose", "refresh_only") // назначение
                 .setIssuedAt(now)
                 .setExpiration(expiry)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)
@@ -69,6 +75,18 @@ public class JwtTokenProvider {
         Claims claims = getAllClaimsFromToken(token);
         return claims.get("role", String.class);
     }
+
+
+    public String getTokenType(String token) {
+        Claims claims = getAllClaimsFromToken(token);
+        return claims.get("token_type", String.class);
+    }
+
+    public String getTokenPurpose(String token) {
+        Claims claims = getAllClaimsFromToken(token);
+        return claims.get("token_purpose", String.class);
+    }
+
 
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parserBuilder()

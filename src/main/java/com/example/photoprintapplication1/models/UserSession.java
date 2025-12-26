@@ -15,7 +15,7 @@ public class UserSession {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "refresh_token")
+    @Column(name = "refresh_token", length = 1024)
     private String refreshToken;
 
     @Column(name = "created_at")
