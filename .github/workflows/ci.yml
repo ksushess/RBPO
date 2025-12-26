@@ -44,7 +44,7 @@ jobs:
             datasource:
               url: jdbc:postgresql://localhost:5432/photoprint
               username: postgres
-              password: postgres
+              password: password
               driver-class-name: org.postgresql.Driver
             jpa:
               hibernate:
