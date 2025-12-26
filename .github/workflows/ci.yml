@@ -81,24 +81,14 @@ jobs:
           exit 1
 
       - name: Run tests
-        run: |
-          
-          mvn -B clean test -Dspring.profiles.active=ci
+        run: mvn -B clean test -Dspring.profiles.active=ci
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          SPRING_PROFILES_ACTIVE: ci
 
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/photoprint
-          SPRING_DATASOURCE_USERNAME: postgres
-          SPRING_DATASOURCE_PASSWORD: postgres
-          SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
-          SERVER_SSL_ENABLED: "false"
 
       - name: Build JAR
         if: success()
-        run: |
-          
-          mvn -B clean package
+        run: mvn -B clean package
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
 
