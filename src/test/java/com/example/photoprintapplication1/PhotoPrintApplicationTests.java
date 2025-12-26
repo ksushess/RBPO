@@ -3,7 +3,7 @@ package com.example.photoprintapplication1;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest (classes = PhotoprintApplication.class)
+@SpringBootTest (properties = "server.ssl.enabled=false")
 class PhotoPrintApplicationTests {
 
 	@Test
